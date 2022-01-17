@@ -1,0 +1,34 @@
+name: Setup Ruby
+description: Setup Ruby
+inputs:
+  ruby-version:
+    required: false
+    default: '2.7'
+  cache-path:
+    required: false
+    default: vendor/bundle
+  cache-key:
+    required: false
+    default: gems-
+  cache-restore-keys:
+    required: false
+    default: gems-
+outputs: {}
+runs:
+    using: "composite"
+    steps:
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ inputs.ruby-version }}
+      - name: Cache Ruby gems
+        uses: actions/cache@v2
+        with:
+          path: ${{ inputs.cache-path }}
+          key: ${{ inputs.cache-key }}
+          restore-keys: ${{ inputs.cache-restore-keys }}
+      - name: Install Ruby gems
+        shell: bash
+        run: |
+          bundle config path ${{ inputs.cache-path }}
+          bundle install --jobs 4 --retry 3

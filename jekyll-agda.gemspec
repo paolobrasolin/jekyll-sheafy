@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.authors = ["Paolo Brasolin"]
   spec.email = ["paolo.brasolin@gmail.com"]
 
-  # spec.summary = ""
+  spec.summary = "Generate Gerby-like websites with Jekyll!"
   # spec.description = ""
   spec.homepage = GH_URL
   spec.license = "MIT"

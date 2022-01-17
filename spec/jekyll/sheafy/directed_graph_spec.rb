@@ -84,4 +84,30 @@ describe Jekyll::Sheafy::DirectedGraph do
       expect { graph.ensure_rooted_forest! }.to_not raise_error
     end
   end
+
+  describe "#topologically_sorted" do
+    it "sorts an empty graph" do
+      graph = Jekyll::Sheafy::DirectedGraph[{}]
+      expect(graph.topologically_sorted).to eq([])
+    end
+
+    it "sorts a single node" do
+      graph = Jekyll::Sheafy::DirectedGraph[{ 1 => [] }]
+      expect(graph.topologically_sorted).to eq([1])
+    end
+
+    it "sorts a rooted tree" do
+      graph = Jekyll::Sheafy::DirectedGraph[
+        { 1 => [2, 3], 2 => [], 3 => [4], 4 => [] }]
+      expect(graph.topologically_sorted).to eq([2, 4, 3, 1])
+    end
+
+    it "sorts a rooted forest" do
+      graph = Jekyll::Sheafy::DirectedGraph[
+        { 1 => [2, 3], 2 => [], 3 => [4], 4 => [],
+          a: [:b, :e], b: [:c, :d], c: [], d: [], e: [] }]
+      expect(graph.topologically_sorted).
+        to eq([2, 4, 3, 1, :c, :d, :b, :e, :a])
+    end
+  end
 end

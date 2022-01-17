@@ -59,6 +59,12 @@ module Jekyll
         raise IndegreeError.new(edges_to_high_indeg)
       end
 
+      def topologically_sorted
+        # TODO: cache tsort calculation
+        ensure_acyclic!
+        TSort.tsort(method(:tsort_each_node), method(:tsort_each_child))
+      end
+
       def self.transpose(adjacency_list)
         Hash.new { |h, k| h[k] = [] }.tap do |transposed_adjacency_list|
           adjacency_list.each_pair do |parent, children|

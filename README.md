@@ -33,7 +33,7 @@ TODO
 
 ## Acknowledgements
 
-- Thanks to [@jonstirling](https://github.com/jonstirling) for [having the idea][math-url] and letting me collaborate and spin it off.
+- Thanks to [@jonsterling](https://github.com/jonsterling) for [having the idea][math-url] and letting me collaborate and spin it off.
 
 [jekyll-url]: https://jekyllrb.com/
 [math-url]: https://github.com/jonsterling/math

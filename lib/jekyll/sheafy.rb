@@ -1,12 +1,12 @@
 require "jekyll/sheafy/version"
 require "jekyll/sheafy/directed_graph"
 require "jekyll/sheafy/dependencies"
+require "jekyll/sheafy/taxa"
 require "jekyll"
 
 module Jekyll
   module Sheafy
     RE_REF_TAG = /{%\s*ref (?<slug>.+?)\s*%}/
-    TAXON_KEY = "taxon"
 
     def self.process_references(nodes)
       # The structure of references is a directed graph,
@@ -30,22 +30,15 @@ module Jekyll
 
     def self.process(site)
       nodes = gather_node(site)
-      nodes.values.each(&method(:apply_taxon))
+      Jekyll::Sheafy::Taxa.process(nodes)
       process_references(nodes)
       Jekyll::Sheafy::Dependencies.process_dependencies(nodes)
     end
 
     def self.gather_node(site)
       site.collections.values.flat_map(&:docs).
-        filter { |doc| doc.data.key?(TAXON_KEY) }.
+        filter { |doc| doc.data.key?(Jekyll::Sheafy::Taxa::TAXON_KEY) }.
         map { |doc| [doc.data["slug"], doc] }.to_h
-    end
-
-    def self.apply_taxon(node)
-      taxon_name = node.data[TAXON_KEY]
-      taxon_data = node.site.config.dig("sheafy", "taxa", taxon_name) || {}
-      # TODO: handle missing taxa
-      node.data.merge!(taxon_data) { |key, left, right| left }
     end
 
     # TODO: handle regenerator dependencies

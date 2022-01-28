@@ -39,11 +39,7 @@ module Jekyll
       end
 
       def self.build_adjacency_list(nodes_index)
-        # nodes_index.transform_values(&method(:scan_includes))
-        nodes_index.map do |parent_slug, parent|
-          children_slugs = scan_includes(parent)
-          [parent_slug, children_slugs]
-        end.to_h
+        nodes_index.transform_values(&method(:scan_includes))
       end
 
       def self.denormalize_adjacency_list!(list, index)

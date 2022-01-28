@@ -1,37 +1,16 @@
 require "jekyll/sheafy/version"
 require "jekyll/sheafy/directed_graph"
 require "jekyll/sheafy/dependencies"
+require "jekyll/sheafy/references"
 require "jekyll/sheafy/taxa"
 require "jekyll"
 
 module Jekyll
   module Sheafy
-    RE_REF_TAG = /{%\s*ref (?<slug>.+?)\s*%}/
-
-    def self.process_references(nodes)
-      # The structure of references is a directed graph,
-      # where source = referrer and target = referent.
-
-      nodes.values.each do |source|
-        source.content.scan(RE_REF_TAG).each do |(slug)|
-          target = nodes[slug]
-          # TODO: handle missing targets
-          target.data["referrers"] ||= []
-          target.data["referrers"] << source
-        end
-      end
-
-      # TODO: use a Set to avoid second pass
-      nodes.values.each do |resource|
-        resource.data["referrers"]&.uniq!
-        resource.data["referrers"] ||= []
-      end
-    end
-
     def self.process(site)
       nodes = gather_node(site)
       Jekyll::Sheafy::Taxa.process(nodes)
-      process_references(nodes)
+      Jekyll::Sheafy::References.process(nodes)
       Jekyll::Sheafy::Dependencies.process_dependencies(nodes)
     end
 

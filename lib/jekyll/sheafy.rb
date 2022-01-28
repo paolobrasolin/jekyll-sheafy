@@ -1,31 +1,23 @@
-require "jekyll/sheafy/version"
-require "jekyll/sheafy/directed_graph"
+require "jekyll"
 require "jekyll/sheafy/dependencies"
 require "jekyll/sheafy/references"
 require "jekyll/sheafy/taxa"
-require "jekyll"
+require "jekyll/sheafy/version"
 
 module Jekyll
   module Sheafy
     def self.process(site)
-      nodes = gather_node(site)
-      Jekyll::Sheafy::Taxa.process(nodes)
-      Jekyll::Sheafy::References.process(nodes)
-      Jekyll::Sheafy::Dependencies.process_dependencies(nodes)
+      nodes_index = build_nodes_index(site)
+      Jekyll::Sheafy::Taxa.process(nodes_index)
+      Jekyll::Sheafy::References.process(nodes_index)
+      Jekyll::Sheafy::Dependencies.process(nodes_index)
     end
 
-    def self.gather_node(site)
+    def self.build_nodes_index(site)
       site.collections.values.flat_map(&:docs).
         filter { |doc| doc.data.key?(Jekyll::Sheafy::Taxa::TAXON_KEY) }.
         map { |doc| [doc.data["slug"], doc] }.to_h
     end
-
-    # TODO: handle regenerator dependencies
-    # if page&.key?('path')
-    #   path = site.in_source_dir(source['path'])
-    #   dependency = site.in_source_dir(targets.path)
-    #   site.regenerator.add_dependency(path, dependency)
-    # end
   end
 end
 

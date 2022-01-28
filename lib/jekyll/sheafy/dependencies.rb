@@ -8,7 +8,7 @@ module Jekyll
       SUBLAYOUT_DEFAULT_VALUE = "sheafy/node/default"
       SUBROOT_KEY = "subroot"
 
-      def self.process_dependencies(nodes)
+      def self.process(nodes)
         adjacency_list = build_adjacency_list(nodes)
         graph = build_rooted_forest!(adjacency_list)
         denormalize_adjacency_list!(graph, nodes)

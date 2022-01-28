@@ -8,8 +8,9 @@ Gem::Specification.new do |spec|
   spec.authors = ["Paolo Brasolin"]
   spec.email = ["paolo.brasolin@gmail.com"]
 
-  spec.summary = "Generate Gerby-like websites with Jekyll!"
-  # spec.description = ""
+  spec.summary = "Brew your own Stacks Project with Jekyll!"
+  spec.description = "This Jekyll plugin is heavily inspired by Gerby, the tool used to build the Stacks Project and Kerodon. It allows you to build math textbooks as static websites which require no complex infrastructure to run."
+
   spec.homepage = GH_URL
   spec.license = "MIT"
   spec.required_ruby_version = Gem::Requirement.new(">= 2.6.0")

@@ -7,14 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.0] - 2022-01-28
+
 ### Added
 
-- MVP.
-
-<!-- ## [0.1.0] - 2022-01-?? -->
+- Structure to represent directed graphs.
+- Topological checks for rooted forests.
 
 [unreleased]: https://github.com/paolobrasolin/jekyll-sheafy/compare/0.1.0...HEAD
-
-<!-- [0.2.0]: https://github.com/paolobrasolin/jekyll-sheafy/compare/0.1.0...0.2.0 -->
-
 [0.1.0]: https://github.com/paolobrasolin/jekyll-sheafy/releases/tag/0.1.0

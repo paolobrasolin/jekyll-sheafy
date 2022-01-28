@@ -1,8 +1,6 @@
 require "jekyll/sheafy/dependencies"
 
-Node = Struct.new(:data, :content, keyword_init: true)
-
-fdescribe Jekyll::Sheafy::Dependencies do
+describe Jekyll::Sheafy::Dependencies do
   describe ".scan_includes" do
     it "detects nothing on empty file" do
       node = Node.new(content: "")

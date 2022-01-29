@@ -19,6 +19,15 @@ describe Jekyll::Sheafy::References do
       expect(subject.scan_references(node)).to eq(["0001", "0002", "0003"])
     end
 
+    it "detects pref and cref" do
+      node = Node.new(content: <<~CONTENT)
+        {% ref 0001 %}
+        {% pref 0002 %}
+        {% cref 0003 %}
+      CONTENT
+      expect(subject.scan_references(node)).to eq(["0001", "0002", "0003"])
+    end
+
     it "keeps duplicates" do
       node = Node.new(content: <<~CONTENT)
         {% ref 0001 %}

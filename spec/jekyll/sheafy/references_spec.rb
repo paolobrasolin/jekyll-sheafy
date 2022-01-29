@@ -1,6 +1,22 @@
 require "jekyll/sheafy/references"
 
 describe Jekyll::Sheafy::References do
+  # TODO: ugh; we should refactor this into a stateless design.
+  before { subject.load_config({}) }
+
+  describe ".load_config" do
+    it "rejects matchers w/o 'slug' named group" do
+      config = { "references" => { "matchers" => [/foobar/] } }
+      expect { subject.load_config(config) }.
+        to raise_error(Jekyll::Sheafy::References::InvalidMatcher)
+    end
+
+    it "accepts matchers w/ 'slug' named group" do
+      config = { "references" => { "matchers" => [/foo(?<slug>.+?)bar/] } }
+      expect { subject.load_config(config) }.to_not raise_error
+    end
+  end
+
   describe ".scan_references" do
     it "detects nothing on empty file" do
       node = Node.new(content: "")

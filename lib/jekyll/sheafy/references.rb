@@ -5,6 +5,9 @@ SafeYAML::OPTIONS[:whitelisted_tags].push("!ruby/regexp")
 module Jekyll
   module Sheafy
     module References
+      class Error < StandardError; end
+      class InvalidMatcher < Error; end
+
       CONFIG_KEY = "references"
       DEFAULT_CONFIG = {
         "matchers" => [
@@ -14,9 +17,17 @@ module Jekyll
       @@config = DEFAULT_CONFIG
       REFERRERS_KEY = "referrers"
 
+      def self.validate_matcher!(matcher)
+        return if matcher.names.include?("slug")
+        raise InvalidMatcher.new(<<~ERROR)
+                Sheafy configuration error: the matcher #{matcher} is missing a capturing group named "slug".
+              ERROR
+      end
+
       def self.load_config(config)
-        @@config = Jekyll::Utils.
-          deep_merge_hashes(DEFAULT_CONFIG, config.fetch(CONFIG_KEY, {}))
+        overrides = config.fetch(CONFIG_KEY, {})
+        overrides["matchers"]&.each(&method(:validate_matcher!))
+        @@config = Jekyll::Utils.deep_merge_hashes(DEFAULT_CONFIG, overrides)
       end
 
       def self.process(nodes_index, config = {})

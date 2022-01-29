@@ -1,7 +1,7 @@
 module Jekyll
   module Sheafy
     module References
-      RE_REF_TAG = /{%\s*ref (?<slug>.+?)\s*%}/
+      RE_REF_TAG = /{%\s*[cp]?ref (?<slug>.+?)\s*%}/
       REFERRERS_KEY = "referrers"
 
       def self.process(nodes_index)

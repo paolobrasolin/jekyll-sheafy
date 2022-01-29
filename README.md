@@ -21,21 +21,67 @@
 
 ## Getting started
 
-TODO
+Currently, the state of the art in using `jekyll-sheafy` is represented by [The Nursery][math-url]. Until I write a minimal guide, the bes way to get started is forking it and playing around with it.
 
 ## Usage
 
-TODO
+> TODO: general usage notes.
+
+### Architecture
+
+> TODO: explain the Directed Rooted Forest structure and the taxa mechanism.
+
+### Node variables
+
+> TODO: fill in details for each variable.
+
+#### General
+
+- `taxon`
+
+#### Layouting
+
+- `layout`
+- `sublayout`
+
+#### Dependencies
+
+- `ancestors`
+- `parent`
+- `subroot`
+- `children`
+
+#### References
+
+- `referents`
+- `referrers`
+
+#### Numbering
+
+- `clicker`
+- `clicks`
 
 ## Roadmap
 
-TODO
+These are the features you can expect in the future:
+
+- `root` variable w/ root node of the tree
+- `siblings` variable or some variant of it to enable navigation between adjacent nodes at the same depth
+- Prev/next node navigation
+- Variable inheritance from parent/root node
+- Search feature
+
+Of course any feedback is welcome!
 
 ## Acknowledgements
 
-- Thanks to [@jonsterling](https://github.com/jonsterling) for [having the idea][math-url] and letting me collaborate and spin it off.
+- Thanks to [@jonsterling](https://github.com/jonsterling) for
+  - using [`krater`][krater-url] to setup [The Nursery][math-url],
+  - having the "brew your own Kerodon" idea, and
+  - letting me collaborate to spin it off into `jekyll-sheafy`.
 
 [jekyll-url]: https://jekyllrb.com/
+[krater-url]: https://github.com/paolobrasolin/krater/
 [math-url]: https://github.com/jonsterling/math
 [gerby-url]: https://gerby-project.github.io/
 [stacks-url]: https://stacks.math.columbia.edu/

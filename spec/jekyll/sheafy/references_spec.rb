@@ -19,13 +19,21 @@ describe Jekyll::Sheafy::References do
       expect(subject.scan_references(node)).to eq(["0001", "0002", "0003"])
     end
 
-    it "detects pref and cref" do
+    it "allows for customization" do
+      subject.load_config({ "references" => {
+        "matchers" => [
+          /{%\s*[pc]?ref (?<slug>.+?)\s*%}/,
+          /{%\s*cite (?<slug>.+?)\s*%}/,
+        ],
+      } })
       node = Node.new(content: <<~CONTENT)
         {% ref 0001 %}
         {% pref 0002 %}
         {% cref 0003 %}
+        {% cite 0004 %}
       CONTENT
-      expect(subject.scan_references(node)).to eq(["0001", "0002", "0003"])
+      expect(subject.scan_references(node)).
+        to eq(["0001", "0002", "0003", "0004"])
     end
 
     it "keeps duplicates" do

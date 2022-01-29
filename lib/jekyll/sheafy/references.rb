@@ -1,10 +1,26 @@
+require "safe_yaml"
+# NOTE: allows for rexexp entries in mathers array in config
+SafeYAML::OPTIONS[:whitelisted_tags].push("!ruby/regexp")
+
 module Jekyll
   module Sheafy
     module References
-      RE_REF_TAG = /{%\s*[cp]?ref (?<slug>.+?)\s*%}/
+      CONFIG_KEY = "references"
+      DEFAULT_CONFIG = {
+        "matchers" => [
+          /{%\s*ref (?<slug>.+?)\s*%}/,
+        ],
+      }
+      @@config = DEFAULT_CONFIG
       REFERRERS_KEY = "referrers"
 
-      def self.process(nodes_index)
+      def self.load_config(config)
+        @@config = Jekyll::Utils.
+          deep_merge_hashes(DEFAULT_CONFIG, config.fetch(CONFIG_KEY, {}))
+      end
+
+      def self.process(nodes_index, config = {})
+        load_config(config)
         adjacency_list = build_adjacency_list(nodes_index)
         denormalize_adjacency_list!(adjacency_list, nodes_index)
         # NOTE: topology is arbitrary so no single pass technique is possible.
@@ -13,7 +29,9 @@ module Jekyll
       end
 
       def self.scan_references(node)
-        node.content.scan(RE_REF_TAG).flatten
+        @@config["matchers"].flat_map do |matcher|
+          node.content.scan(matcher).flatten
+        end
       end
 
       def self.build_adjacency_list(nodes_index)

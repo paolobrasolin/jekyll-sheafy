@@ -1,0 +1,11 @@
+title: jekyll-sheafy
+description: Brew your own Stacks Project with Jekyll!
+baseurl: &baseurl "/jekyll-sheafy"
+
+remote_theme: pages-themes/cayman@v0.2.0
+
+plugins:
+  - jekyll-remote-theme
+
+include:
+  - .nojekyll

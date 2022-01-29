@@ -1,6 +1,22 @@
 require "jekyll/sheafy/references"
 
 describe Jekyll::Sheafy::References do
+  # TODO: ugh; we should refactor this into a stateless design.
+  before { subject.load_config({}) }
+
+  describe ".load_config" do
+    it "rejects matchers w/o 'slug' named group" do
+      config = { "references" => { "matchers" => [/foobar/] } }
+      expect { subject.load_config(config) }.
+        to raise_error(Jekyll::Sheafy::References::InvalidMatcher)
+    end
+
+    it "accepts matchers w/ 'slug' named group" do
+      config = { "references" => { "matchers" => [/foo(?<slug>.+?)bar/] } }
+      expect { subject.load_config(config) }.to_not raise_error
+    end
+  end
+
   describe ".scan_references" do
     it "detects nothing on empty file" do
       node = Node.new(content: "")
@@ -17,6 +33,23 @@ describe Jekyll::Sheafy::References do
         {% ref 0003 %}
       CONTENT
       expect(subject.scan_references(node)).to eq(["0001", "0002", "0003"])
+    end
+
+    it "allows for customization" do
+      subject.load_config({ "references" => {
+        "matchers" => [
+          /{%\s*[pc]?ref (?<slug>.+?)\s*%}/,
+          /{%\s*cite (?<slug>.+?)\s*%}/,
+        ],
+      } })
+      node = Node.new(content: <<~CONTENT)
+        {% ref 0001 %}
+        {% pref 0002 %}
+        {% cref 0003 %}
+        {% cite 0004 %}
+      CONTENT
+      expect(subject.scan_references(node)).
+        to eq(["0001", "0002", "0003", "0004"])
     end
 
     it "keeps duplicates" do

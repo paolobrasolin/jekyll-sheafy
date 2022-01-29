@@ -6,10 +6,13 @@ require "jekyll/sheafy/version"
 
 module Jekyll
   module Sheafy
+    CONFIG_KEY = "sheafy"
+
     def self.process(site)
+      config = site.config.fetch(CONFIG_KEY, {})
       nodes_index = build_nodes_index(site)
       Jekyll::Sheafy::Taxa.process(nodes_index)
-      Jekyll::Sheafy::References.process(nodes_index)
+      Jekyll::Sheafy::References.process(nodes_index, config)
       Jekyll::Sheafy::Dependencies.process(nodes_index)
     end
 

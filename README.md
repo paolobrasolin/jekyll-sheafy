@@ -31,6 +31,17 @@ Currently, the state of the art in using `jekyll-sheafy` is represented by [The 
 
 > TODO: explain the Directed Rooted Forest structure and the taxa mechanism.
 
+### Configuration
+
+> TODO: fill in details for each parameter.
+
+```yaml
+sheafy:
+  references:
+    matchers: [] # ...
+  taxa: {} # ...
+```
+
 ### Node variables
 
 > TODO: fill in details for each variable.

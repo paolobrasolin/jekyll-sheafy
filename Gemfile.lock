@@ -38,7 +38,7 @@ GEM
     geo_pattern (1.4.0)
       color (~> 1.5)
     http_parser.rb (0.8.0)
-    i18n (1.8.11)
+    i18n (1.9.1)
       concurrent-ruby (~> 1.0)
     jekyll (4.2.1)
       addressable (~> 2.4)
@@ -55,8 +55,6 @@ GEM
       rouge (~> 3.0)
       safe_yaml (~> 1.0)
       terminal-table (~> 2.0)
-    jekyll-agda (0.1.0)
-      jekyll (>= 3, < 5)
     jekyll-cayman-theme (0.1.0)
     jekyll-github-metadata (2.13.0)
       jekyll (>= 3.4, < 5.0)
@@ -70,6 +68,8 @@ GEM
       sassc (> 2.0.1, < 3.0)
     jekyll-seo-tag (2.7.1)
       jekyll (>= 3.8, < 5.0)
+    jekyll-sheafy (0.1.0)
+      jekyll (>= 3, < 5)
     jekyll-watch (2.2.1)
       listen (~> 3.0)
     kramdown (2.3.1)
@@ -111,11 +111,11 @@ PLATFORMS
 DEPENDENCIES
   geo_pattern
   jekyll
-  jekyll-agda
   jekyll-cayman-theme
   jekyll-github-metadata
   jekyll-remote-theme
   jekyll-seo-tag
+  jekyll-sheafy
   kramdown-parser-gfm
 
 RUBY VERSION

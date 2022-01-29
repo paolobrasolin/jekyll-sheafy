@@ -42,14 +42,14 @@ describe Jekyll::Sheafy::References do
       site.config = { "sheafy" => { "references" => {
         "matchers" => [
           /{%\s*[pc]?ref (?<slug>.+?)\s*%}/,
-          /{%\s*cite (?<slug>.+?)\s*%}/,
+          /{%\s*cite (?<foobar>.+?) (?<slug>.+?)\s*%}/,
         ],
       } } }
       node = Node.new(site: site, content: <<~CONTENT)
         {% ref 0001 %}
         {% pref 0002 %}
         {% cref 0003 %}
-        {% cite 0004 %}
+        {% cite hwat 0004 %}
       CONTENT
       expect(subject.scan_references(node)).
         to eq(["0001", "0002", "0003", "0004"])

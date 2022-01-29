@@ -12,6 +12,7 @@ module Jekyll
       DEFAULT_MATCHERS = [
         /{%\s*ref (?<slug>.+?)\s*%}/,
       ]
+      SLUG_CAPTURE_NAME = "slug"
       REFERRERS_KEY = "referrers"
 
       def self.validate_config!(config)
@@ -19,10 +20,11 @@ module Jekyll
       end
 
       def self.validate_matcher!(matcher)
-        return if matcher.names.include?("slug")
-        raise InvalidMatcher.new(<<~ERROR)
-                Sheafy configuration error: the matcher #{matcher} is missing a capturing group named "slug".
-              ERROR
+        valid = matcher.named_captures.key?(SLUG_CAPTURE_NAME)
+        valid &&= matcher.named_captures.fetch(SLUG_CAPTURE_NAME).one?
+        raise InvalidMatcher.new(<<~ERROR) unless valid
+          Sheafy configuration error: the matcher #{matcher} must have ONE capturing group named "#{SLUG_CAPTURE_NAME}".
+        ERROR
       end
 
       def self.process(nodes_index)
@@ -36,7 +38,8 @@ module Jekyll
       def self.scan_references(node)
         matchers = node.site.config.dig(*MATCHERS_PATH) || DEFAULT_MATCHERS
         matchers.flat_map do |matcher|
-          node.content.scan(matcher).flatten
+          index = matcher.named_captures.fetch(SLUG_CAPTURE_NAME).fetch(0).pred
+          node.content.scan(matcher).map { |captures| captures.fetch(index) }
         end
       end
 

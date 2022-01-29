@@ -4,9 +4,6 @@ module Jekyll
   module Sheafy
     module Dependencies
       RE_INCLUDE_TAG = /^@include{(?<slug>.+?)}$/
-      SUBLAYOUT_KEY = "sublayout"
-      SUBLAYOUT_DEFAULT_VALUE = "sheafy/node/default"
-      SUBROOT_KEY = "subroot"
 
       def self.process(nodes)
         adjacency_list = build_adjacency_list(nodes)
@@ -34,6 +31,8 @@ module Jekyll
         end
       end
 
+      #==[ Graph building ]=====================================================
+
       def self.scan_includes(node)
         node.content.scan(RE_INCLUDE_TAG).flatten
       end
@@ -42,11 +41,29 @@ module Jekyll
         nodes_index.transform_values(&method(:scan_includes))
       end
 
+      def self.build_rooted_forest!(adjacency_list)
+        Sheafy::DirectedGraph[adjacency_list].
+          tap(&:ensure_rooted_forest!)
+      rescue Sheafy::DirectedGraph::PayloadError => error
+        message = case error
+          when Sheafy::DirectedGraph::MultipleEdgesError then "node reuse"
+          when Sheafy::DirectedGraph::LoopsError then "self reference"
+          when Sheafy::DirectedGraph::CyclesError then "cyclic reference"
+          when Sheafy::DirectedGraph::IndegreeError then "node reuse"
+          else raise StandardError.new("Malformed dependency graph!")
+          end
+        raise StandardError.new(<<~MESSAGE)
+                Error in dependency graph topology, #{message} detected: #{error.payload}
+              MESSAGE
+      end
+
       def self.denormalize_adjacency_list!(list, index)
         # TODO: handle missing nodes
         list.transform_keys!(&index)
         list.values.each { |children| children.map!(&index) }
       end
+
+      #==[ Data generation ]====================================================
 
       def self.attribute_neighbors!(list)
         list.each do |parent, children|
@@ -84,21 +101,11 @@ module Jekyll
         end
       end
 
-      def self.build_rooted_forest!(adjacency_list)
-        Sheafy::DirectedGraph[adjacency_list].
-          tap(&:ensure_rooted_forest!)
-      rescue Sheafy::DirectedGraph::PayloadError => error
-        message = case error
-          when Sheafy::DirectedGraph::MultipleEdgesError then "node reuse"
-          when Sheafy::DirectedGraph::LoopsError then "self reference"
-          when Sheafy::DirectedGraph::CyclesError then "cyclic reference"
-          when Sheafy::DirectedGraph::IndegreeError then "node reuse"
-          else raise StandardError.new("Malformed dependency graph!")
-          end
-        raise StandardError.new(<<~MESSAGE)
-                Error in dependency graph topology, #{message} detected: #{error.payload}
-              MESSAGE
-      end
+      #==[ Layout flattening ]==================================================
+
+      SUBLAYOUT_KEY = "sublayout"
+      SUBLAYOUT_DEFAULT_VALUE = "sheafy/node/default"
+      SUBROOT_KEY = "subroot"
 
       def self.apply_sublayout(resource, content, subroot)
         sublayout = resource.data.fetch(SUBLAYOUT_KEY, SUBLAYOUT_DEFAULT_VALUE)

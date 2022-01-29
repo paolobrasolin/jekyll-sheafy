@@ -53,7 +53,6 @@ Currently, the state of the art in using `jekyll-sheafy` is represented by [The 
 
 #### References
 
-- `referents`
 - `referrers`
 
 #### Numbering
@@ -65,6 +64,7 @@ Currently, the state of the art in using `jekyll-sheafy` is represented by [The 
 
 These are the features you can expect in the future:
 
+- Enable `referents` variable w/ nodes references by the current one
 - `root` variable w/ root node of the tree
 - `siblings` variable or some variant of it to enable navigation between adjacent nodes at the same depth
 - Prev/next node navigation

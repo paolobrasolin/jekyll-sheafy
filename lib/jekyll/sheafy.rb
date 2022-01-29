@@ -6,13 +6,14 @@ require "jekyll/sheafy/version"
 
 module Jekyll
   module Sheafy
-    CONFIG_KEY = "sheafy"
+    def self.validate_config!(site)
+      Jekyll::Sheafy::References.validate_config!(site.config)
+    end
 
     def self.process(site)
-      config = site.config.fetch(CONFIG_KEY, {})
       nodes_index = build_nodes_index(site)
       Jekyll::Sheafy::Taxa.process(nodes_index)
-      Jekyll::Sheafy::References.process(nodes_index, config)
+      Jekyll::Sheafy::References.process(nodes_index)
       Jekyll::Sheafy::Dependencies.process(nodes_index)
     end
 
@@ -22,6 +23,10 @@ module Jekyll
         map { |doc| [doc.data["slug"], doc] }.to_h
     end
   end
+end
+
+Jekyll::Hooks.register :site, :after_init do |site|
+  Jekyll::Sheafy::validate_config!(site)
 end
 
 Jekyll::Hooks.register :site, :post_read, priority: 30 do |site|

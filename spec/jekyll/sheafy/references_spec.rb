@@ -1,30 +1,33 @@
 require "jekyll/sheafy/references"
 
 describe Jekyll::Sheafy::References do
-  # TODO: ugh; we should refactor this into a stateless design.
-  before { subject.load_config({}) }
+  let(:site) { Site.new(config: {}) }
 
-  describe ".load_config" do
+  describe ".validate_config!" do
     it "rejects matchers w/o 'slug' named group" do
-      config = { "references" => { "matchers" => [/foobar/] } }
-      expect { subject.load_config(config) }.
+      config = { "sheafy" => { "references" => {
+        "matchers" => [/foobar/],
+      } } }
+      expect { subject.validate_config!(config) }.
         to raise_error(Jekyll::Sheafy::References::InvalidMatcher)
     end
 
     it "accepts matchers w/ 'slug' named group" do
-      config = { "references" => { "matchers" => [/foo(?<slug>.+?)bar/] } }
-      expect { subject.load_config(config) }.to_not raise_error
+      config = { "sheafy" => { "references" => {
+        "matchers" => [/foo(?<slug>.+?)bar/],
+      } } }
+      expect { subject.validate_config!(config) }.to_not raise_error
     end
   end
 
   describe ".scan_references" do
     it "detects nothing on empty file" do
-      node = Node.new(content: "")
+      node = Node.new(site: site, content: "")
       expect(subject.scan_references(node)).to eq([])
     end
 
     it "detects includes mixed with text" do
-      node = Node.new(content: <<~CONTENT)
+      node = Node.new(site: site, content: <<~CONTENT)
         Lorem ipsum.
         {% ref 0001 %}
         Dolor sit amet.
@@ -36,13 +39,13 @@ describe Jekyll::Sheafy::References do
     end
 
     it "allows for customization" do
-      subject.load_config({ "references" => {
+      site.config = { "sheafy" => { "references" => {
         "matchers" => [
           /{%\s*[pc]?ref (?<slug>.+?)\s*%}/,
           /{%\s*cite (?<slug>.+?)\s*%}/,
         ],
-      } })
-      node = Node.new(content: <<~CONTENT)
+      } } }
+      node = Node.new(site: site, content: <<~CONTENT)
         {% ref 0001 %}
         {% pref 0002 %}
         {% cref 0003 %}
@@ -53,7 +56,7 @@ describe Jekyll::Sheafy::References do
     end
 
     it "keeps duplicates" do
-      node = Node.new(content: <<~CONTENT)
+      node = Node.new(site: site, content: <<~CONTENT)
         {% ref 0001 %}
         {% ref 0001 %}
       CONTENT
@@ -69,9 +72,9 @@ describe Jekyll::Sheafy::References do
 
     it "correctly interpretes a boring index" do
       index = {
-        "0000" => Node.new(content: "{%ref 0001%}{%ref 0002%}{%ref 0001%}"),
-        "0001" => Node.new(content: "{%ref 0000%}{%ref 0002%}"),
-        "0002" => Node.new(content: ""),
+        "0000" => Node.new(site: site, content: "{%ref 0001%}{%ref 0002%}{%ref 0001%}"),
+        "0001" => Node.new(site: site, content: "{%ref 0000%}{%ref 0002%}"),
+        "0002" => Node.new(site: site, content: ""),
       }
       expect(subject.build_adjacency_list(index)).to eq({
         "0000" => ["0001", "0002", "0001"],
@@ -82,8 +85,8 @@ describe Jekyll::Sheafy::References do
 
     it "keeps duplicates" do
       index = {
-        "0000" => Node.new(content: "{% ref 0001 %}\n" * 2),
-        "0001" => Node.new(content: ""),
+        "0000" => Node.new(site: site, content: "{% ref 0001 %}\n" * 2),
+        "0001" => Node.new(site: site, content: ""),
       }
       expect(subject.build_adjacency_list(index)).to eq(
         { "0000" => ["0001", "0001"], "0001" => [] }

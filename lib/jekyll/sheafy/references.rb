@@ -8,14 +8,15 @@ module Jekyll
       class Error < StandardError; end
       class InvalidMatcher < Error; end
 
-      CONFIG_KEY = "references"
-      DEFAULT_CONFIG = {
-        "matchers" => [
-          /{%\s*ref (?<slug>.+?)\s*%}/,
-        ],
-      }
-      @@config = DEFAULT_CONFIG
+      MATCHERS_PATH = ["sheafy", "references", "matchers"]
+      DEFAULT_MATCHERS = [
+        /{%\s*ref (?<slug>.+?)\s*%}/,
+      ]
       REFERRERS_KEY = "referrers"
+
+      def self.validate_config!(config)
+        config.dig(*MATCHERS_PATH)&.each(&method(:validate_matcher!))
+      end
 
       def self.validate_matcher!(matcher)
         return if matcher.names.include?("slug")
@@ -24,14 +25,7 @@ module Jekyll
               ERROR
       end
 
-      def self.load_config(config)
-        overrides = config.fetch(CONFIG_KEY, {})
-        overrides["matchers"]&.each(&method(:validate_matcher!))
-        @@config = Jekyll::Utils.deep_merge_hashes(DEFAULT_CONFIG, overrides)
-      end
-
-      def self.process(nodes_index, config = {})
-        load_config(config)
+      def self.process(nodes_index)
         adjacency_list = build_adjacency_list(nodes_index)
         denormalize_adjacency_list!(adjacency_list, nodes_index)
         # NOTE: topology is arbitrary so no single pass technique is possible.
@@ -40,7 +34,8 @@ module Jekyll
       end
 
       def self.scan_references(node)
-        @@config["matchers"].flat_map do |matcher|
+        matchers = node.site.config.dig(*MATCHERS_PATH) || DEFAULT_MATCHERS
+        matchers.flat_map do |matcher|
           node.content.scan(matcher).flatten
         end
       end

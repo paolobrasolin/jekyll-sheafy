@@ -8,6 +8,8 @@ module Jekyll
         nodes_index.values.each(&method(:apply_taxon!))
       end
 
+      #==[ Data generation ]====================================================
+
       def self.apply_taxon!(node)
         taxon_name = node.data[TAXON_KEY]
         taxon_data = node.site.config.dig(*TAXA_PATH, taxon_name) || {}

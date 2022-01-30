@@ -26,7 +26,9 @@ module Jekyll
       #==[ Config validation ]==================================================
 
       def self.validate_config!(config)
-        config.dig(*TAXA_PATH)&.each(&method(:validate_taxon!))
+        config.dig(*TAXA_PATH)&.each_pair do |taxon_key, taxon_value|
+          validate_taxon!(taxon_key, taxon_value)
+        end
       end
 
       def self.validate_taxon!(taxon_key, taxon_value)

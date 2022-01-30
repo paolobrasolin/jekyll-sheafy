@@ -15,18 +15,6 @@ module Jekyll
       SLUG_CAPTURE_NAME = "slug"
       REFERRERS_KEY = "referrers"
 
-      def self.validate_config!(config)
-        config.dig(*MATCHERS_PATH)&.each(&method(:validate_matcher!))
-      end
-
-      def self.validate_matcher!(matcher)
-        valid = matcher.named_captures.key?(SLUG_CAPTURE_NAME)
-        valid &&= matcher.named_captures.fetch(SLUG_CAPTURE_NAME).one?
-        raise InvalidMatcher.new(<<~ERROR) unless valid
-          Sheafy configuration error: the matcher #{matcher} must have ONE capturing group named "#{SLUG_CAPTURE_NAME}".
-        ERROR
-      end
-
       def self.process(nodes_index)
         adjacency_list = build_adjacency_list(nodes_index)
         denormalize_adjacency_list!(adjacency_list, nodes_index)
@@ -34,6 +22,8 @@ module Jekyll
         nodes_index.values.each { |node| node.data[REFERRERS_KEY] = [] }
         attribute_neighbors!(adjacency_list)
       end
+
+      #==[ Graph building ]=====================================================
 
       def self.scan_references(node)
         matchers = node.site.config.dig(*MATCHERS_PATH) || DEFAULT_MATCHERS
@@ -53,6 +43,8 @@ module Jekyll
         list.values.each { |children| children.map!(&index) }
       end
 
+      #==[ Data generation ]====================================================
+
       def self.attribute_neighbors!(list)
         list.each do |referrer, referents|
           # TODO: can referents be useful?
@@ -62,6 +54,20 @@ module Jekyll
             referent.data[REFERRERS_KEY] << referrer
           end
         end
+      end
+
+      #==[ Config validation ]==================================================
+
+      def self.validate_config!(config)
+        config.dig(*MATCHERS_PATH)&.each(&method(:validate_matcher!))
+      end
+
+      def self.validate_matcher!(matcher)
+        valid = matcher.named_captures.key?(SLUG_CAPTURE_NAME)
+        valid &&= matcher.named_captures.fetch(SLUG_CAPTURE_NAME).one?
+        raise InvalidMatcher.new(<<~ERROR) unless valid
+          Sheafy configuration error: the matcher #{matcher} must have ONE capturing group named "#{SLUG_CAPTURE_NAME}".
+        ERROR
       end
     end
   end

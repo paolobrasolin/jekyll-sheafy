@@ -1,19 +1,22 @@
 require "safe_yaml"
+require "jekyll/sheafy/template_error"
+
 # NOTE: allows for rexexp entries in mathers array in config
 SafeYAML::OPTIONS[:whitelisted_tags].push("!ruby/regexp")
 
 module Jekyll
   module Sheafy
     module References
-      class Error < StandardError; end
-      class InvalidMatcher < Error; end
-
       MATCHERS_PATH = ["sheafy", "references", "matchers"]
       DEFAULT_MATCHERS = [
         /{%\s*ref (?<slug>.+?)\s*%}/,
       ]
       SLUG_CAPTURE_NAME = "slug"
       REFERRERS_KEY = "referrers"
+
+      class Error < TemplateError; end
+
+      InvalidMatcher = Error.build("Invalid reference matcher: %s should have one capture group named '#{SLUG_CAPTURE_NAME}'.")
 
       def self.process(nodes_index)
         adjacency_list = build_adjacency_list(nodes_index)
@@ -65,9 +68,7 @@ module Jekyll
       def self.validate_matcher!(matcher)
         valid = matcher.named_captures.key?(SLUG_CAPTURE_NAME)
         valid &&= matcher.named_captures.fetch(SLUG_CAPTURE_NAME).one?
-        raise InvalidMatcher.new(<<~ERROR) unless valid
-          Sheafy configuration error: the matcher #{matcher} must have ONE capturing group named "#{SLUG_CAPTURE_NAME}".
-        ERROR
+        raise InvalidMatcher.new(matcher) unless valid
       end
     end
   end

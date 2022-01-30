@@ -44,16 +44,9 @@ module Jekyll
       def self.build_rooted_forest!(adjacency_list)
         Sheafy::DirectedGraph[adjacency_list].
           tap(&:ensure_rooted_forest!)
-      rescue Sheafy::DirectedGraph::PayloadError => error
-        message = case error
-          when Sheafy::DirectedGraph::MultipleEdgesError then "node reuse"
-          when Sheafy::DirectedGraph::LoopsError then "self reference"
-          when Sheafy::DirectedGraph::CyclesError then "cyclic reference"
-          when Sheafy::DirectedGraph::IndegreeError then "node reuse"
-          else raise StandardError.new("Malformed dependency graph!")
-          end
+      rescue Jekyll::Sheafy::DirectedGraph::Error => error
         raise StandardError.new(<<~MESSAGE)
-                Error in dependency graph topology, #{message} detected: #{error.payload}
+                Sheafy processing error! The nodes dependency graph MUST be a directed rooted forest. #{error.message}
               MESSAGE
       end
 

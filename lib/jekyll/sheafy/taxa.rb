@@ -1,11 +1,14 @@
+require "jekyll/sheafy/template_error"
+
 module Jekyll
   module Sheafy
     module Taxa
-      class Error < StandardError; end
-      class InvalidTaxon < Error; end
-
       TAXA_PATH = ["sheafy", "taxa"]
       TAXON_KEY = "taxon"
+
+      class Error < TemplateError; end
+
+      InvalidTaxon = Error.build("Invalid taxon: %s should be an hash.")
 
       def self.process(nodes_index)
         nodes_index.values.each(&method(:apply_taxon!))
@@ -27,9 +30,7 @@ module Jekyll
       end
 
       def self.validate_taxon!(taxon_key, taxon_value)
-        raise InvalidTaxon.new(<<~ERROR) unless taxon_value.is_a?(Hash)
-          Sheafy configuration error: the value of taxon #{taxon_key} must be a hash.
-        ERROR
+        raise InvalidTaxon.new(taxon_key) unless taxon_value.is_a?(Hash)
       end
     end
   end

@@ -1,23 +1,17 @@
 require "tsort"
+require "jekyll/sheafy/template_error"
 
 module Jekyll
   module Sheafy
     class DirectedGraph < Hash
-      class PayloadError < StandardError
-        attr_reader :payload
+      class Error < TemplateError; end
 
-        def initialize(payload)
-          @payload = payload
-          super
-        end
-      end
-
-      class MissingKeysError < PayloadError; end
-      class InvalidValuesError < PayloadError; end
-      class MultipleEdgesError < PayloadError; end
-      class LoopsError < PayloadError; end
-      class CyclesError < PayloadError; end
-      class IndegreeError < PayloadError; end
+      MissingKeysError = Error.build("Missing keys detected: %s.")
+      InvalidValuesError = Error.build("Invalid values detected: %s.")
+      MultipleEdgesError = Error.build("Parallel edges detected: %s.")
+      LoopsError = Error.build("Loops detected: %s.")
+      CyclesError = Error.build("Cycles detected: %s.")
+      IndegreeError = Error.build("Nodes with indegree > 1 detected: %s.")
 
       def ensure_rooted_forest!
         ensure_valid!

@@ -6,7 +6,7 @@ describe Jekyll::Sheafy::DirectedGraph do
       graph = Jekyll::Sheafy::DirectedGraph[{ 1 => [2], 2 => [3], 4 => [5, 3] }]
       expect { graph.ensure_valid! }.to raise_error do |error|
         expect(error).to be_a(Jekyll::Sheafy::DirectedGraph::MissingKeysError)
-        expect(error.payload).to eq([3, 5])
+        expect(error.payload).to eq([[3, 5]])
       end
     end
 
@@ -14,7 +14,7 @@ describe Jekyll::Sheafy::DirectedGraph do
       graph = Jekyll::Sheafy::DirectedGraph[{ 1 => [], 2 => nil, 3 => "foo" }]
       expect { graph.ensure_valid! }.to raise_error do |error|
         expect(error).to be_a(Jekyll::Sheafy::DirectedGraph::InvalidValuesError)
-        expect(error.payload).to eq([nil, "foo"])
+        expect(error.payload).to eq([[nil, "foo"]])
       end
     end
   end
@@ -25,7 +25,7 @@ describe Jekyll::Sheafy::DirectedGraph do
         { 1 => [2], 2 => [3, 4, 3], 3 => [], 4 => [5, 5, 5], 5 => [] }]
       expect { graph.ensure_simple! }.to raise_error do |error|
         expect(error).to be_a(Jekyll::Sheafy::DirectedGraph::MultipleEdgesError)
-        expect(error.payload).to eq({ 2 => [3], 4 => [5] })
+        expect(error.payload).to eq([{ 2 => [3], 4 => [5] }])
       end
     end
 
@@ -33,7 +33,7 @@ describe Jekyll::Sheafy::DirectedGraph do
       graph = Jekyll::Sheafy::DirectedGraph[{ 1 => [1, 2], 2 => [3], 3 => [3] }]
       expect { graph.ensure_simple! }.to raise_error do |error|
         expect(error).to be_a(Jekyll::Sheafy::DirectedGraph::LoopsError)
-        expect(error.payload).to eq({ 1 => [1], 3 => [3] })
+        expect(error.payload).to eq([{ 1 => [1], 3 => [3] }])
       end
     end
   end
@@ -44,7 +44,7 @@ describe Jekyll::Sheafy::DirectedGraph do
         { 1 => [2], 2 => [3], 3 => [1], 4 => [5], 5 => [4], 6 => [7], 7 => [] }]
       expect { graph.ensure_acyclic! }.to raise_error do |error|
         expect(error).to be_a(Jekyll::Sheafy::DirectedGraph::CyclesError)
-        expect(error.payload).to eq([[1, 2, 3], [4, 5]])
+        expect(error.payload).to eq([[[1, 2, 3], [4, 5]]])
       end
     end
   end
@@ -55,7 +55,7 @@ describe Jekyll::Sheafy::DirectedGraph do
         { 1 => [2, 3], 2 => [4], 3 => [4, 5], 4 => [], 5 => [] }]
       expect { graph.ensure_transposed_pseudoforest! }.to raise_error do |error|
         expect(error).to be_a(Jekyll::Sheafy::DirectedGraph::IndegreeError)
-        expect(error.payload).to eq({ 2 => [4], 3 => [4] })
+        expect(error.payload).to eq([{ 2 => [4], 3 => [4] }])
       end
     end
   end

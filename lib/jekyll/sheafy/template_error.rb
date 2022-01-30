@@ -16,7 +16,7 @@ module Jekyll
         raise ArgumentError.new(<<~MESSAGE) unless template.is_a?(String)
           wrong type of argument (given #{template.class}, expected String)
         MESSAGE
-        Class.new(TemplateError) do
+        Class.new(self) do
           @template = template
         end
       end

@@ -39,5 +39,11 @@ describe Jekyll::Sheafy::TemplateError do
         new({ first: "Bob", last: "Alice" })).
         to have_attributes(message: "Hello, Bob and Alice!")
     end
+
+    it "correctly handle inheritance" do
+      class MyGenericError < subject; end
+
+      expect(MyGenericError.build("").superclass).to eq(MyGenericError)
+    end
   end
 end

@@ -3,6 +3,23 @@ require "jekyll/sheafy/taxa"
 describe Jekyll::Sheafy::Taxa do
   let(:site) { Site.new(config: {}) }
 
+  describe ".validate_config!" do
+    it "rejects taxa which are not hashes" do
+      config = { "sheafy" => { "taxa" => {
+        "my_taxon" => nil,
+      } } }
+      expect { subject.validate_config!(config) }.
+        to raise_error(Jekyll::Sheafy::Taxa::InvalidTaxon)
+    end
+
+    it "accepts taxa which are hashes" do
+      config = { "sheafy" => { "taxa" => {
+        "foobar" => { "some" => "attribute" },
+      } } }
+      expect { subject.validate_config!(config) }.to_not raise_error
+    end
+  end
+
   describe ".apply_taxon!" do
     it "does not explode if there's no config" do
       node = Node.new(site: site, data: {})

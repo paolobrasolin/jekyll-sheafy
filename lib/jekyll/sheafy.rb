@@ -7,6 +7,7 @@ require "jekyll/sheafy/version"
 module Jekyll
   module Sheafy
     def self.validate_config!(site)
+      Jekyll::Sheafy::Taxa.validate_config!(site.config)
       Jekyll::Sheafy::References.validate_config!(site.config)
     end
 

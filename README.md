@@ -68,6 +68,7 @@ sheafy:
 #### References
 
 - `referrers`
+- `referents`
 
 #### Numbering
 
@@ -78,7 +79,6 @@ sheafy:
 
 These are the features you can expect in the future:
 
-- Enable `referents` variable w/ nodes references by the current one
 - Variable inheritance from parent/root node
 - Search feature
 

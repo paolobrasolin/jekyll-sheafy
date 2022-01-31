@@ -13,6 +13,7 @@ module Jekyll
       ]
       SLUG_CAPTURE_NAME = "slug"
       REFERRERS_KEY = "referrers"
+      REFERENTS_KEY = "referents"
 
       class Error < TemplateError; end
 
@@ -50,8 +51,7 @@ module Jekyll
         # NOTE: topology is arbitrary so no single pass technique is possible.
         list.keys.each { |node| node.data[REFERRERS_KEY] = [] }
         list.each do |referrer, referents|
-          # TODO: can referents be useful?
-          # referrer.data["referents"] = referents.uniq
+          referrer.data[REFERENTS_KEY] = referents.uniq
           referents.each do |referent|
             next if referent.data[REFERRERS_KEY].include?(referrer)
             referent.data[REFERRERS_KEY] << referrer

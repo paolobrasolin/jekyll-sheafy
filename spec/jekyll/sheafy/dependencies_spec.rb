@@ -123,4 +123,19 @@ describe Jekyll::Sheafy::Dependencies do
         change { child.data["root"] }.to(:root)
     end
   end
+
+  describe ".attribute_depth!" do
+    it "adds depth zero to node w/o w/o parent" do
+      root = Node.new(data: {})
+      expect { subject.attribute_depth!(root) }.to \
+        change { root.data["depth"] }.to(0)
+    end
+
+    it "increases depth from parent if present" do
+      parent = Node.new(data: { "depth" => 41 })
+      child = Node.new(data: { "parent" => parent })
+      expect { subject.attribute_depth!(child) }.to \
+        change { child.data["depth"] }.to(42)
+    end
+  end
 end

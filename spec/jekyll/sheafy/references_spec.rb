@@ -93,4 +93,36 @@ describe Jekyll::Sheafy::References do
       )
     end
   end
+
+  describe ".attribute_neighbors!" do
+    let(:referrer_a) { Node.new(data: {}) }
+    let(:referrer_b) { Node.new(data: {}) }
+    let(:referent_x) { Node.new(data: {}) }
+    let(:referent_y) { Node.new(data: {}) }
+
+    it "adds no referrers to referent w/o references" do
+      graph = { referrer_a => [] }
+      expect { subject.attribute_neighbors!(graph) }.to \
+        change { referrer_a.data["referrers"] }.to([])
+    end
+
+    it "adds single referrer to single referent" do
+      graph = { referrer_a => [referent_x], referent_x => [] }
+      expect { subject.attribute_neighbors!(graph) }.to \
+        change { referent_x.data["referrers"] }.to([referrer_a])
+    end
+
+    it "adds single referrer to multiple referents" do
+      graph = { referrer_a => [referent_x, referent_y], referent_x => [], referent_y => [] }
+      expect { subject.attribute_neighbors!(graph) }.to \
+        change { referent_x.data["referrers"] }.to([referrer_a]).and \
+          change { referent_y.data["referrers"] }.to([referrer_a])
+    end
+
+    it "does not duplicate referrers" do
+      graph = { referrer_a => [referent_x, referent_x], referent_x => [] }
+      expect { subject.attribute_neighbors!(graph) }.to \
+        change { referent_x.data["referrers"] }.to([referrer_a])
+    end
+  end
 end

@@ -21,8 +21,6 @@ module Jekyll
       def self.process(nodes_index)
         adjacency_list = build_adjacency_list(nodes_index)
         denormalize_adjacency_list!(adjacency_list, nodes_index)
-        # NOTE: topology is arbitrary so no single pass technique is possible.
-        nodes_index.values.each { |node| node.data[REFERRERS_KEY] = [] }
         attribute_neighbors!(adjacency_list)
       end
 
@@ -49,6 +47,8 @@ module Jekyll
       #==[ Data generation ]====================================================
 
       def self.attribute_neighbors!(list)
+        # NOTE: topology is arbitrary so no single pass technique is possible.
+        list.keys.each { |node| node.data[REFERRERS_KEY] = [] }
         list.each do |referrer, referents|
           # TODO: can referents be useful?
           # referrer.data["referents"] = referents.uniq

@@ -138,4 +138,84 @@ describe Jekyll::Sheafy::Dependencies do
         change { child.data["depth"] }.to(42)
     end
   end
+
+  describe ".attribute_clicks!" do
+    it "adds unlabeled click to node without clicker" do
+      node = Node.new(data: {})
+      expect { subject.attribute_clicks!(node) }.to \
+        change { node.data["clicks"] }.to([{ "clicker" => nil, "value" => 0 }])
+    end
+
+    it "adds labeled click to node with clicker" do
+      node = Node.new(data: { "clicker" => "FOO" })
+      expect { subject.attribute_clicks!(node) }.to \
+        change { node.data["clicks"] }.to([{ "clicker" => "FOO", "value" => 0 }])
+    end
+
+    it "prepends parent's clicks to child" do
+      parent = Node.new(data: {})
+      child = Node.new(data: {})
+      parent.data["children"] = [child]
+      expect { subject.attribute_clicks!(parent) }.to \
+        change { child.data["clicks"] }.to([
+          { "clicker" => nil, "value" => 0 },
+          { "clicker" => nil, "value" => 0 },
+        ])
+    end
+
+    it "adds consecutive clicks to homogeneous children" do
+      parent = Node.new(data: {})
+      child_foo = Node.new(data: {})
+      child_bar = Node.new(data: {})
+      child_qux = Node.new(data: {})
+      parent.data["children"] = [child_foo, child_bar, child_qux]
+
+      expect { subject.attribute_clicks!(parent) }.to \
+        change { child_foo.data["clicks"] }.to([
+          { "clicker" => nil, "value" => 0 },
+          { "clicker" => nil, "value" => 0 },
+        ]).and \
+          change { child_bar.data["clicks"] }.to([
+            { "clicker" => nil, "value" => 0 },
+            { "clicker" => nil, "value" => 1 },
+          ]).and \
+            change { child_qux.data["clicks"] }.to([
+              { "clicker" => nil, "value" => 0 },
+              { "clicker" => nil, "value" => 2 },
+            ])
+    end
+
+    it "adds grouped consecutive clicks to dishomogeneous children" do
+      parent = Node.new(data: { "clicker" => "Z" })
+      child_A0 = Node.new(data: { "clicker" => "A" })
+      child_A1 = Node.new(data: { "clicker" => "A" })
+      child_B0 = Node.new(data: { "clicker" => "B" })
+      child_A2 = Node.new(data: { "clicker" => "A" })
+      child_B1 = Node.new(data: { "clicker" => "B" })
+      parent.data["children"] =
+        [child_A0, child_A1, child_B0, child_A2, child_B1]
+
+      expect { subject.attribute_clicks!(parent) }.to \
+        change { child_A0.data["clicks"] }.to([
+          { "clicker" => "Z", "value" => 0 },
+          { "clicker" => "A", "value" => 0 },
+        ]).and \
+          change { child_A1.data["clicks"] }.to([
+            { "clicker" => "Z", "value" => 0 },
+            { "clicker" => "A", "value" => 1 },
+          ]).and \
+            change { child_B0.data["clicks"] }.to([
+              { "clicker" => "Z", "value" => 0 },
+              { "clicker" => "B", "value" => 0 },
+            ]).and \
+              change { child_A2.data["clicks"] }.to([
+                { "clicker" => "Z", "value" => 0 },
+                { "clicker" => "A", "value" => 2 },
+              ]).and \
+                change { child_B1.data["clicks"] }.to([
+                  { "clicker" => "Z", "value" => 0 },
+                  { "clicker" => "B", "value" => 1 },
+                ])
+    end
+  end
 end

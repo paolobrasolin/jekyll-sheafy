@@ -88,8 +88,8 @@ module Jekyll
         node.data["clicks"] ||= [
           { "clicker" => node.data["clicker"], "value" => 0 },
         ]
-        node.data["children"].
-          group_by { |child| child.data["clicker"] }.
+        node.data["children"]&.
+          group_by { |child| child.data["clicker"] }&.
           each do |clicker, children|
           children.each_with_index do |child, index|
             clicks = node.data["clicks"].dup

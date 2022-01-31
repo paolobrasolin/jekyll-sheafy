@@ -10,6 +10,7 @@ module Jekyll
     def self.validate_config!(site)
       Jekyll::Sheafy::Taxa.validate_config!(site.config)
       Jekyll::Sheafy::References.validate_config!(site.config)
+      Jekyll::Sheafy::Dependencies.validate_config!(site.config)
     rescue Jekyll::Sheafy::TemplateError => error
       raise StandardError.new(<<~MESSAGE)
               Sheafy configuration error! #{error.message}

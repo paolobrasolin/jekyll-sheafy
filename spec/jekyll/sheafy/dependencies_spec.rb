@@ -1,6 +1,32 @@
 require "jekyll/sheafy/dependencies"
 
 describe Jekyll::Sheafy::Dependencies do
+  let(:site) { Site.new(config: {}) }
+
+  describe ".validate_config!" do
+    it "accepts blank configuration" do
+      config = { "sheafy" => {} }
+      expect { subject.validate_config!(config) }.to_not raise_error
+    end
+
+    it "rejects inheritables key which is not an array" do
+      config = { "sheafy" => { "inheritable" => 42 } }
+      expect { subject.validate_config!(config) }.
+        to raise_error(Jekyll::Sheafy::Dependencies::InvalidConfig)
+    end
+
+    it "rejects inheritables which are not strings" do
+      config = { "sheafy" => { "inheritable" => [:foo] } }
+      expect { subject.validate_config!(config) }.
+        to raise_error(Jekyll::Sheafy::Dependencies::InvalidConfig)
+    end
+
+    it "accepts inheritables which are strings" do
+      config = { "sheafy" => { "inheritable" => ["foo"] } }
+      expect { subject.validate_config!(config) }.to_not raise_error
+    end
+  end
+
   describe ".scan_includes" do
     it "detects nothing on empty file" do
       node = Node.new(content: "")

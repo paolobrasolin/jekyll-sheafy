@@ -5,6 +5,10 @@ module Jekyll
     module Dependencies
       RE_INCLUDE_TAG = /^@include{(?<slug>.+?)}$/
 
+      class Error < TemplateError; end
+
+      InvalidConfig = Error.build("Invalid config: %s is not an %s.")
+
       def self.process(nodes)
         adjacency_list = build_adjacency_list(nodes)
         graph = build_rooted_forest!(adjacency_list)
@@ -148,6 +152,21 @@ module Jekyll
           flatten_subtree(doc, resources, subroot)
         end
         apply_sublayout(resource, content, subroot)
+      end
+
+      #==[ Config validation ]==================================================
+
+      def self.validate_config!(config)
+        case (inheritables = config.dig(*INHERITABLE_PATH))
+        when nil
+        when Array
+          inheritables.each_with_index do |inheritable, index|
+            next if inheritable.is_a?(String)
+            raise InvalidConfig.new([*INHERITABLE_PATH, index].join("."), "string")
+          end
+        else
+          raise InvalidConfig.new(INHERITABLE_PATH.join("."), "array")
+        end
       end
     end
   end

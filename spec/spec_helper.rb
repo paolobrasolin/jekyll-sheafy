@@ -1,3 +1,5 @@
+require "byebug" # I might as well keep it
+
 require "simplecov"
 require "simplecov-lcov"
 

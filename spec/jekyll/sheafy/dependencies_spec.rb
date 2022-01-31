@@ -218,4 +218,32 @@ describe Jekyll::Sheafy::Dependencies do
                 ])
     end
   end
+
+  describe ".attribute_inheritable!" do
+    let(:site) { Site.new(config: { "sheafy" => { "inheritable" => ["foo"] } }) }
+
+    it "inherits inhertiable attributes" do
+      parent = Node.new(site: site, data: { "parent" => nil, "foo" => "bar" })
+      child = Node.new(site: site, data: { "parent" => parent })
+
+      expect { subject.attribute_inheritable!(child) }.
+        to change { child.data["foo"] }.to ("bar")
+    end
+
+    it "ignores non inheritable attributes" do
+      parent = Node.new(site: site, data: { "parent" => nil, "XXX" => "bar" })
+      child = Node.new(site: site, data: { "parent" => parent })
+
+      expect { subject.attribute_inheritable!(child) }.
+        not_to change { child.data["XXX"] }
+    end
+
+    it "abides to overrides" do
+      parent = Node.new(site: site, data: { "parent" => nil, "foo" => "bar" })
+      child = Node.new(site: site, data: { "parent" => parent, "foo" => "qux" })
+
+      expect { subject.attribute_inheritable!(child) }.
+        not_to change { child.data["foo"] }
+    end
+  end
 end

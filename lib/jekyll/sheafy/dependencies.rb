@@ -23,6 +23,7 @@ module Jekyll
           attribute_ancestors!(node)
           attribute_depth!(node)
           attribute_clicks!(node)
+          attribute_inheritable!(node)
         end
 
         # NOTE: this pass is separate to have data available in layouts.
@@ -97,6 +98,16 @@ module Jekyll
             child.data["clicks"] = clicks
           end
         end
+      end
+
+      INHERITABLE_PATH = ["sheafy", "inheritable"]
+
+      def self.attribute_inheritable!(node)
+        inheritable = node.site.config.dig(*INHERITABLE_PATH) || []
+        return unless (parent = node.data["parent"])
+        inherited = parent.data.slice(*inheritable)
+        # TODO: how/when do we need to clone/dup here?
+        node.data.merge!(**inherited) { |key, left, right| left }
       end
 
       #==[ Layout flattening ]==================================================

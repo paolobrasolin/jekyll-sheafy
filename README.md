@@ -40,6 +40,7 @@ sheafy:
   references:
     matchers: [] # ...
   taxa: {} # ...
+  inheritable: [] # ...
 ```
 
 ### Node variables
@@ -79,7 +80,6 @@ sheafy:
 
 These are the features you can expect in the future:
 
-- Variable inheritance from parent/root node
 - Search feature
 
 Of course any feedback is welcome!

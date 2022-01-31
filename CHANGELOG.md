@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `inheritable` config key (array of strings, validated) to define attributes which are inherited from parent node.
+- `referents` variable containing list of referents (i.e. the targets of all references in the current node).
+- `root` variable containing the root node of the tree the current node belongs to.
+- `predecessors`/`successors` variables containing the siblings preceeding/following the current node.
+
+### Changed
+
+- Error message are a bit more rational.
+- `taxa` configuration key is now validated; it must be an hash valued in hashes.
+- `references.matchers` configuration key is now validated; it must be an array of regexps containing a single named capture "slug".
+
 ## [0.2.0] - 2022-01-29
 
 ### Added

@@ -95,4 +95,19 @@ describe Jekyll::Sheafy::Dependencies do
             change { child_qux.data["successors"] }.to([])
     end
   end
+
+  describe ".attribute_ancestors!" do
+    it "adds empty ancestry to node w/o parent" do
+      root = Node.new(data: {})
+      expect { subject.attribute_ancestors!(root) }.to \
+        change { root.data["ancestors"] }.to([])
+    end
+
+    it "builds ancestry inductively on node w/ parent" do
+      parent = Node.new(data: { "ancestors" => [:foo, :bar] })
+      child = Node.new(data: { "parent" => parent })
+      expect { subject.attribute_ancestors!(child) }.to \
+        change { child.data["ancestors"] }.to([:foo, :bar, parent])
+    end
+  end
 end

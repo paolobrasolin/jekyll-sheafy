@@ -76,6 +76,7 @@ module Jekyll
           ancestors = [*parent.data["ancestors"], parent]
           node.data["ancestors"] = ancestors
         end
+        node.data["root"] = parent&.data&.[]("root") || node
       end
 
       def self.attribute_depth!(node)

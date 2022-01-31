@@ -57,6 +57,7 @@ sheafy:
 
 #### Dependencies
 
+- `root`
 - `ancestors`
 - `parent`
 - `subroot`
@@ -78,7 +79,6 @@ sheafy:
 These are the features you can expect in the future:
 
 - Enable `referents` variable w/ nodes references by the current one
-- `root` variable w/ root node of the tree
 - Variable inheritance from parent/root node
 - Search feature
 

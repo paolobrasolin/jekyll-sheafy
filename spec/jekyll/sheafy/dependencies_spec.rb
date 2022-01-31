@@ -109,5 +109,18 @@ describe Jekyll::Sheafy::Dependencies do
       expect { subject.attribute_ancestors!(child) }.to \
         change { child.data["ancestors"] }.to([:foo, :bar, parent])
     end
+
+    it "adds itself as root to node w/o parent" do
+      root = Node.new(data: {})
+      expect { subject.attribute_ancestors!(root) }.to \
+        change { root.data["root"] }.to(root)
+    end
+
+    it "gets root from parent if present" do
+      parent = Node.new(data: { "root" => :root })
+      child = Node.new(data: { "parent" => parent })
+      expect { subject.attribute_ancestors!(child) }.to \
+        change { child.data["root"] }.to(:root)
+    end
   end
 end

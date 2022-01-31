@@ -61,7 +61,11 @@ module Jekyll
       def self.attribute_neighbors!(list)
         list.each do |parent, children|
           parent.data["children"] = children
-          children.each { |child| child.data["parent"] ||= parent }
+          children.each_with_index do |child, index|
+            child.data["parent"] ||= parent
+            child.data["predecessors"] = children.take(index)
+            child.data["successors"] = children.drop(index.succ)
+          end
         end
       end
 

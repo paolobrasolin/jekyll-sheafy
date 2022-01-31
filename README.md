@@ -61,6 +61,8 @@ sheafy:
 - `parent`
 - `subroot`
 - `children`
+- `predecessors`
+- `successors`
 
 #### References
 
@@ -77,8 +79,6 @@ These are the features you can expect in the future:
 
 - Enable `referents` variable w/ nodes references by the current one
 - `root` variable w/ root node of the tree
-- `siblings` variable or some variant of it to enable navigation between adjacent nodes at the same depth
-- Prev/next node navigation
 - Variable inheritance from parent/root node
 - Search feature
 

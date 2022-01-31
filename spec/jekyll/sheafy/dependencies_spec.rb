@@ -61,4 +61,38 @@ describe Jekyll::Sheafy::Dependencies do
       )
     end
   end
+
+  describe ".attribute_neighbors!" do
+    let(:parent) { Node.new(data: {}) }
+    let(:child_foo) { Node.new(data: {}) }
+    let(:child_bar) { Node.new(data: {}) }
+    let(:child_qux) { Node.new(data: {}) }
+    let(:graph) { { parent => [child_foo, child_bar, child_qux] } }
+
+    it "adds parent to all children" do
+      expect { subject.attribute_neighbors!(graph) }.to \
+        change { child_foo.data["parent"] }.to(parent).and \
+          change { child_bar.data["parent"] }.to(parent).and \
+            change { child_qux.data["parent"] }.to(parent)
+    end
+
+    it "adds all children to parent" do
+      expect { subject.attribute_neighbors!(graph) }.to \
+        change { parent.data["children"] }.to([child_foo, child_bar, child_qux])
+    end
+
+    it "adds older siblings to all children" do
+      expect { subject.attribute_neighbors!(graph) }.to \
+        change { child_foo.data["predecessors"] }.to([]).and \
+          change { child_bar.data["predecessors"] }.to([child_foo]).and \
+            change { child_qux.data["predecessors"] }.to([child_foo, child_bar])
+    end
+
+    it "adds younger siblings to all children" do
+      expect { subject.attribute_neighbors!(graph) }.to \
+        change { child_foo.data["successors"] }.to([child_bar, child_qux]).and \
+          change { child_bar.data["successors"] }.to([child_qux]).and \
+            change { child_qux.data["successors"] }.to([])
+    end
+  end
 end
